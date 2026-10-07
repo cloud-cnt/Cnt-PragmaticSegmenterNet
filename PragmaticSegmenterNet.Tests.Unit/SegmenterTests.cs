@@ -53,9 +53,7 @@ namespace PragmaticSegmenterNet.Tests.Unit
         {
             var result = Segmenter.Segment("('$0 xyz, $1 abc, $0 def').");
 
-            Assert.Equal(1, result.Count);
-
-            Assert.Equal("('$0 xyz, $1 abc, $0 def').", result[0]);
+            Assert.Equal("('$0 xyz, $1 abc, $0 def').", Assert.Single(result));
         }
 
         [Fact]
