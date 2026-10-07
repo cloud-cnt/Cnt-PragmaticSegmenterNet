@@ -1,0 +1,7 @@
+<Project>
+  <!-- HlsRecorder enables central package management in the parent repo.
+       These projects keep versions on their PackageReferences. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+</Project>
