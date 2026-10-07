@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using PragmaticSegmenterNet.Languages.Common;
 
     internal static class InternalSegmenter
     {
@@ -14,7 +15,7 @@
         private static readonly Regex ShortSegmentRegex = new Regex(@"\A[a-zA-Z]*\Z");
         private static readonly Regex ConsecutiveUnderscoreRegex = new Regex(@"_{3,}");
 
-        public static IReadOnlyList<string> Segment(string text, ILanguage language)
+        public static IReadOnlyList<string> Segment(string text, ILanguage language, bool segmentInsideQuotations)
         {
             var splitByReference = ReferenceSeparator.SeparateReferences(text);
             var newLined = CheckForParenthesesBetweenQuotes(splitByReference, language);
@@ -35,7 +36,7 @@
 
             for (var i = 0; i < parts.Count; i++)
             {
-                var split = CheckForPunctuation(parts[i], language);
+                var split = CheckForPunctuation(parts[i], language, segmentInsideQuotations);
 
                 if (split.Count == 0)
                 {
@@ -129,7 +130,7 @@
             return text;
         }
 
-        private static IReadOnlyList<string> CheckForPunctuation(string text, ILanguage language)
+        private static IReadOnlyList<string> CheckForPunctuation(string text, ILanguage language, bool segmentInsideQuotations)
         {
             var containsPunctuation = false;
             var endsWithPunctuation = false;
@@ -159,24 +160,30 @@
             }
 
             text = ExclamationWords.Apply(text);
-            text = language.BetweenPunctuationReplacer.Replace(text);
+            text = language.BetweenPunctuationReplacer.Replace(text, segmentInsideQuotations);
             text = language.DoublePunctuationRules.Apply(text);
             text = language.QuestionMarkInQuotationRule.Apply(text);
             text = language.ExclamationMarkRules.Apply(text);
 
             text = ListItemReplacer.ReplaceParentheses(text);
 
-            var result = SplitUsingSentenceBoundaryPunctuation(text, language);
+            var result = SplitUsingSentenceBoundaryPunctuation(text, language, segmentInsideQuotations);
 
             return result;
         }
 
-        private static IReadOnlyList<string> SplitUsingSentenceBoundaryPunctuation(string text, ILanguage language)
+        private static IReadOnlyList<string> SplitUsingSentenceBoundaryPunctuation(string text, ILanguage language, bool segmentInsideQuotations)
         {
             text = language.ReplaceColonBetweenNumbersRule.Apply(text);
             text = language.ReplaceNonSentenceBoundaryCommaRule.Apply(text);
 
-            var matches = language.SentenceBoundaryRegex.Matches(text);
+            var boundaryRegex = language.SentenceBoundaryRegex;
+            if (segmentInsideQuotations && ReferenceEquals(boundaryRegex, CoreRegexes.SentenceBoundaryRegex))
+            {
+                boundaryRegex = CoreRegexes.SentenceBoundaryInsideQuotationsRegex;
+            }
+
+            var matches = boundaryRegex.Matches(text);
 
             var result = new string[matches.Count];
 

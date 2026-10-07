@@ -57,6 +57,53 @@ namespace PragmaticSegmenterNet.Tests.Unit
         }
 
         [Fact]
+        public void KeepsSentencesInsideQuotationsTogetherByDefault()
+        {
+            var result = Segmenter.Segment("He said \"Go home. Stay there.\" Then he left.");
+
+            Assert.Equal(new[]
+            {
+                "He said \"Go home. Stay there.\"",
+                "Then he left."
+            }, result);
+        }
+
+        [Fact]
+        public void SegmentsInsideQuotationsWhenAsked()
+        {
+            var result = Segmenter.Segment("He said \"Go home. Stay there.\" Then he left.", segmentInsideQuotations: true);
+
+            Assert.Equal(new[]
+            {
+                "He said \"Go home.",
+                "Stay there.",
+                "\" Then he left."
+            }, result);
+        }
+
+        [Fact]
+        public void SegmentsPastYearApostropheWhenAsked()
+        {
+            const string text = "Said on the 12th, '24, he could. Now don't stop. Then it ends.' Next starts here.";
+
+            var ignored = Segmenter.Segment(text);
+            var segmented = Segmenter.Segment(text, segmentInsideQuotations: true);
+
+            Assert.Equal(new[]
+            {
+                "Said on the 12th, '24, he could. Now don't stop. Then it ends.'",
+                "Next starts here."
+            }, ignored);
+            Assert.Equal(new[]
+            {
+                "Said on the 12th, '24, he could.",
+                "Now don't stop.",
+                "Then it ends.",
+                "' Next starts here."
+            }, segmented);
+        }
+
+        [Fact]
         public void HandlesNonBreakingSpaceText()
         {
             var result = Segmenter.Segment("Trututu\u00A01. trututu\u00A02. trututu");

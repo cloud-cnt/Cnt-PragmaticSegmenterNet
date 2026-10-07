@@ -29,24 +29,37 @@
 
         private static readonly Regex SpaceFollowingApostropheRegex = new Regex(@"'\s");
 
-        public string Replace(string text)
+        public string Replace(string text, bool segmentInsideQuotations)
         {
-            var result = SubstitutePunctuationBetweenQuotesAndParens(text);
+            var result = SubstitutePunctuationBetweenQuotesAndParens(text, segmentInsideQuotations);
 
             return result;
         }
 
-        protected virtual string SubstitutePunctuationBetweenQuotesAndParens(string text)
+        protected virtual string SubstitutePunctuationBetweenQuotesAndParens(string text, bool segmentInsideQuotations)
         {
-            text = SubstitutePunctuationBetweenSingleQuotes(text);
-            text = SubstituteUsingRegex(BetweenSlantedSingleQuotesRegex, text);
-            text = SubstitutePunctuationBetweenDoubleQuotes(text);
+            if (!segmentInsideQuotations)
+            {
+                text = SubstitutePunctuationBetweenSingleQuotes(text);
+                text = SubstituteUsingRegex(BetweenSlantedSingleQuotesRegex, text);
+                text = SubstitutePunctuationBetweenDoubleQuotes(text);
+            }
+
             text = SubstituteUsingRegex(BetweenSquareBracketsRegex, text);
             text = SubstituteUsingRegex(BetweenParensRegex, text);
-            text = SubstituteUsingRegex(BetweenQuoteArrowRegex, text);
-            text = SubstituteUsingRegex(BetweenDoubleAngleQuotationMarkRegex, text);
+
+            if (!segmentInsideQuotations)
+            {
+                text = SubstituteUsingRegex(BetweenQuoteArrowRegex, text);
+                text = SubstituteUsingRegex(BetweenDoubleAngleQuotationMarkRegex, text);
+            }
+
             text = SubstituteUsingRegex(BetweenEmDashesRegex, text);
-            text = SubstituteUsingRegex(BetweenQuoteSlantedRegex, text);
+
+            if (!segmentInsideQuotations)
+            {
+                text = SubstituteUsingRegex(BetweenQuoteSlantedRegex, text);
+            }
 
             return text;
         }

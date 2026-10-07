@@ -20,11 +20,14 @@
             private static readonly Regex BetweenQuoteJapaneseRegex = new Regex(@"\u300c(?>[^\u300c\u300d\\]+|\\{2}|\\.)*\u300d");
             private static readonly Regex BetweenParenthesesJapaneseRegex = new Regex(@"\uff08(?>[^\uff08\uff09\\]+|\\{2}|\\.)*\uff09");
 
-            protected override string SubstitutePunctuationBetweenQuotesAndParens(string text)
+            protected override string SubstitutePunctuationBetweenQuotesAndParens(string text, bool segmentInsideQuotations)
             {
-                var result = base.SubstitutePunctuationBetweenQuotesAndParens(text);
+                var result = base.SubstitutePunctuationBetweenQuotesAndParens(text, segmentInsideQuotations);
                 result = SubstituteUsingRegex(BetweenParenthesesJapaneseRegex, result);
-                result = SubstituteUsingRegex(BetweenQuoteJapaneseRegex, result);
+                if (!segmentInsideQuotations)
+                {
+                    result = SubstituteUsingRegex(BetweenQuoteJapaneseRegex, result);
+                }
 
                 return result;
             }

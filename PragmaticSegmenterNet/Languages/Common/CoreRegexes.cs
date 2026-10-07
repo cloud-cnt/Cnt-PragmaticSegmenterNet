@@ -11,6 +11,9 @@
         public static Regex ParenthesesBetweenDoubleQuotesRegex = new Regex(@"[""”]\s\(.*\)\s[""“]");
 
         public static Regex SentenceBoundaryRegex = new Regex(@"\uff08(?:[^\uff09])*\uff09(?=\s?[A-Z])|\u300c(?:[^\u300d])*\u300d(?=\s[A-Z])|\((?:[^\)]){2,}\)(?=\s[A-Z])|'(?:[^'])*[^,]'(?=\s[A-Z])|""(?:[^""])*[^,]""(?=\s[A-Z])|“(?:[^”])*[^,]”(?=\s[A-Z])|\S.*?[。．.！!?？ȸȹ☉☈☇☄]");
+
+        // Same boundaries, without the alternatives that consume an entire quotation as one sentence.
+        public static Regex SentenceBoundaryInsideQuotationsRegex = new Regex(@"\uff08(?:[^\uff09])*\uff09(?=\s?[A-Z])|\((?:[^\)]){2,}\)(?=\s[A-Z])|\S.*?[。．.！!?？ȸȹ☉☈☇☄]");
         
         public static Regex QuotationAtEndOfSentenceRegex = new Regex(@"[!?\.-][\""\'\u201d\u201c]\s{1}[A-Z]");
 

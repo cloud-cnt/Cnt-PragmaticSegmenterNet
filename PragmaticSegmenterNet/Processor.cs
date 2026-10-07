@@ -7,7 +7,7 @@
     {
         private static readonly Regex NumberedGroups = new Regex(@"\$(\d+)");
 
-        public static IReadOnlyList<string> Process(string text, ILanguage language)
+        public static IReadOnlyList<string> Process(string text, ILanguage language, bool segmentInsideQuotations)
         {
             text = ReplaceRegexGroupsSyntax(text);
             text = ListItemReplacer.AddLineBreak(text);
@@ -18,7 +18,7 @@
             text = language.GeoLocationRule.Apply(text);
             text = language.FileFormatRule.Apply(text);
 
-            var segments = InternalSegmenter.Segment(text, language);
+            var segments = InternalSegmenter.Segment(text, language, segmentInsideQuotations);
 
             return segments;
         }

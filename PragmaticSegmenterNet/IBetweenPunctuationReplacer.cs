@@ -2,6 +2,6 @@
 {
     internal interface IBetweenPunctuationReplacer
     {
-        string Replace(string text);
+        string Replace(string text, bool segmentInsideQuotations);
     }
 }

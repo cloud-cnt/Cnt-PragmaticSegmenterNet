@@ -4,7 +4,11 @@
 
     public static class Segmenter
     {
-        public static IReadOnlyList<string> Segment(string text, Language language = Language.English, bool cleanText = true, DocumentType documentType = DocumentType.Any)
+        /// <param name="segmentInsideQuotations">
+        /// When <see langword="true"/>, sentence breaks inside quotation marks are kept.
+        /// The default suppresses them.
+        /// </param>
+        public static IReadOnlyList<string> Segment(string text, Language language = Language.English, bool cleanText = true, DocumentType documentType = DocumentType.Any, bool segmentInsideQuotations = false)
         {
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -23,7 +27,7 @@
                 text = Cleaner.Clean(text, matchingLanguage, documentType);
             }
 
-            var result = Processor.Process(text, matchingLanguage);
+            var result = Processor.Process(text, matchingLanguage, segmentInsideQuotations);
 
             return result;
         }
